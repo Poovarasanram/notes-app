@@ -14,15 +14,9 @@ class NoteModel:
         )
         return convert_model_to_dict(note)
     
-    # def list_notes(self, user):
-    #     if user.role == "admin": 
-    #         notes = Note.objects.all()
-    #     else:
-    #         notes = Note.objects.filter(created_by=user)
-    #     return [convert_model_to_dict(n) for n in notes]
     
     def list_notes(self, user, page=1, page_size=8):  # default 8 notes per page
-        if user.role == "admin":
+        if user.role == "Admin":
             notes = Note.objects.all().order_by('-id')
         else:
             notes = Note.objects.filter(created_by=user).order_by('-id')
@@ -41,7 +35,7 @@ class NoteModel:
     
     def update_note(self, note_id, title, content, user):
         try:
-            note = Note.objects.get(id=note_id, created_by=user)
+            note = Note.objects.get(id=note_id )
             note.title = title
             note.content = content
             note.save()
@@ -51,7 +45,7 @@ class NoteModel:
 
     def delete_note(self, note_id, user):
         try:
-            note = Note.objects.get(id=note_id, created_by=user)
+            note = Note.objects.get(id=note_id)
             note.delete()
             return True
         except Note.DoesNotExist:

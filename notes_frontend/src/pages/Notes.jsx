@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { Table, message, Button, Space, Modal, Form, Input, Spin } from "antd";
+import {
+  Table,
+  message,
+  Button,
+  Space,
+  Modal,
+  Form,
+  Input,
+  Spin,
+} from "antd";
 import axios from "axios";
 
 function Notes() {
@@ -8,14 +17,13 @@ function Notes() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
   const [form] = Form.useForm();
-  const [searchText, setSearchText] = useState("");
 
-  // Pagination states
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [pageSize, setPageSize] = useState(6);
 
-  const fetchNotes = async (page = 1, pageSize = 4) => {
+  const fetchNotes = async (page = 1, pageSize = 6) => {
     setLoading(true);
     try {
       const accessToken = localStorage.getItem("access_token");
@@ -32,7 +40,7 @@ function Notes() {
       setTotalItems(response.data.total);
       setCurrentPage(response.data.page);
     } catch (error) {
-      console.error("Error fetching notes:", error);
+      console.error("Fetch notes error:", error);
       message.error("Failed to load notes");
     } finally {
       setLoading(false);
@@ -77,25 +85,29 @@ function Notes() {
       const accessToken = localStorage.getItem("access_token");
 
       if (editingNote) {
-        await axios.put(`http://127.0.0.1:8000/api/notes/${editingNote.id}/`, values, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        message.success("Note updated");
+        await axios.put(
+          `http://127.0.0.1:8000/api/notes/${editingNote.id}/`,
+          values,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        message.success("Note updated successfully");
       } else {
-        await axios.post("http://127.0.0.1:8000/api/notes/", values, {
+        await axios.post(`http://127.0.0.1:8000/api/notes/`, values, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        message.success("Note added");
+        message.success("Note added successfully");
       }
 
       setIsModalOpen(false);
       fetchNotes(currentPage, pageSize);
     } catch (error) {
-      console.error("Save failed:", error);
+      console.error("Save error:", error);
       message.error("Failed to save note");
     }
   };
@@ -112,10 +124,23 @@ function Notes() {
       key: "content",
     },
     {
+      title: "User",
+      dataIndex: "created_by",
+      key: "created_by",
+      render: (user) => user?.username || "Unknown",
+    },
+    {
       title: "Created At",
-      dataIndex: "created_dt",
-      key: "created_dt",
-      render: (text) => new Date(text).toLocaleString(),
+      dataIndex: "created_at",
+      key: "created_at",
+      render: (text) =>
+        new Date(text).toLocaleString("en-IN", {
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
     },
     {
       title: "Actions",
@@ -135,20 +160,19 @@ function Notes() {
 
   return (
     <div style={{ padding: 24 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 20,
+        }}
+      >
         <h2>Notes</h2>
         <Button type="primary" onClick={handleAdd}>
           + Add Note
         </Button>
       </div>
-
-      {/* <Input
-        placeholder="Search notes by title"
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        style={{ marginBottom: 16, marginTop: 8, width: 300 }}
-        // disabled // backend search not yet implemented
-      /> */}
 
       {loading ? (
         <div style={{ textAlign: "center", marginTop: 40 }}>

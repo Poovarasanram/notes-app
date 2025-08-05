@@ -1,20 +1,12 @@
-FROM node:20-alpine
 
-# Set working directory
+FROM node:20-alpine as builder
 WORKDIR /app
-
-# Install dependencies
-COPY package*.json ./
-RUN npm install
-
-# Copy all frontend files
 COPY . .
+RUN npm install && npm run build
 
-# Expose Vite dev server port
-EXPOSE 5173
-
-# Ensure proper file watching inside Docker (especially for Windows/WSL)
-ENV CHOKIDAR_USEPOLLING=true
-
-# Run Vite development server
-CMD ["npm", "run", "dev"]
+# Step 2: Serve using NGINX
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

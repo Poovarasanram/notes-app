@@ -12,6 +12,7 @@ function Register() {
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage(); 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,8 +20,12 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
-      message.error("Passwords do not match!");
+      messageApi.open({
+        type: "error",
+        content: "Passwords do not match!",
+      });
       return;
     }
 
@@ -31,10 +36,18 @@ function Register() {
         password: formData.password,
         role: formData.role,
       });
-      message.success("Registration successful!");
-      navigate("/login");
+
+      messageApi.open({
+        type: "success",
+        content: "Registration successful!",
+      });
+
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
-      message.error("Registration failed. Try a different username.");
+      messageApi.open({
+        type: "error",
+        content: "Registration failed. Try a different username.",
+      });
       console.error(err);
     } finally {
       setLoading(false);
@@ -49,6 +62,7 @@ function Register() {
       height: "100vh",
       backgroundColor: "#f6f9fc"
     }}>
+      {contextHolder} 
       <Spin spinning={loading} tip="Registering..." size="large">
         <div style={{
           background: "white",

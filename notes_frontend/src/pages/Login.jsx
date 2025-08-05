@@ -1,80 +1,8 @@
-// import { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate, Link } from 'react-router-dom';
-
-// function Login() {
-//   const [username, setUsername] = useState('');
-//   const [password, setPassword] = useState('');
-//   const navigate = useNavigate();
-
-//   const handleLogin = async (e) => {
-//     e.preventDefault();
-
-//     try {
-//       const response = await axios.post('http://127.0.0.1:8000/api/login/', {
-//         username,
-//         password
-//       });
-
-//       const { access, refresh } = response.data;
-
-//       // Store access token in localStorage
-//       localStorage.setItem('access_token', access);
-//       localStorage.setItem('refresh_token', refresh);
-
-//       alert("Login successful!");
-//       navigate('/notes'); // Redirect to home or dashboard
-
-//     } catch (error) {
-//       console.error("Login failed:", error);
-//       alert("Invalid credentials");
-//     }
-//   };
-
-//   return (
-//     <div style={{ padding: '2rem' }}>
-//       <h2>Login</h2>
-//       <form onSubmit={handleLogin}>
-//         <div>
-//           <label>Username:</label><br />
-//           <input
-//             type="text"
-//             placeholder="Enter username"
-//             value={username}
-//             onChange={(e) => setUsername(e.target.value)}
-//             required
-//           />
-//         </div>
-
-//         <div style={{ marginTop: '1rem' }}>
-//           <label>Password:</label><br />
-//           <input
-//             type="password"
-//             placeholder="Enter password"
-//             value={password}
-//             onChange={(e) => setPassword(e.target.value)}
-//             required
-//           />
-//         </div>
-
-//         <button type="submit" style={{ marginTop: '1rem' }}>Login</button>
-//       </form>
-
-//       <p style={{ marginTop: '1rem' }}>
-//         Don't have an account? <Link to="/register">Register</Link>
-//       </p>
-//     </div>
-//   );
-// }
-
-// export default Login;
-
-
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { Spin, message } from 'antd';
-import 'antd/dist/reset.css'; // AntD v5+
+import 'antd/dist/reset.css'; 
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -82,24 +10,34 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/login/', {
         username,
-        password
+        password,
       });
 
       const { access, refresh } = response.data;
       localStorage.setItem('access_token', access);
       localStorage.setItem('refresh_token', refresh);
 
-      message.success("Login successful! Redirecting...");
+      messageApi.open({
+        type: 'success',
+        content: 'Login successful! Redirecting...',
+      });
+
       setTimeout(() => navigate('/notes'), 1500);
     } catch (error) {
-      console.error("Login error:", error);
-      message.error("Invalid username or password.");
+      console.error('Login error:', error);
+      messageApi.open({
+        type: 'error',
+        content: 'Invalid username or password.',
+      });
     } finally {
       setLoading(false);
     }
@@ -107,13 +45,24 @@ function Login() {
 
   return (
     <div className="form-container">
+      {contextHolder}
       <h2>Sign in to your account</h2>
       <form onSubmit={handleLogin}>
         <label>User Name</label>
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
 
         <label>Password</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
         <div className="form-actions">
           {loading ? <Spin /> : <button type="submit">Sign in</button>}

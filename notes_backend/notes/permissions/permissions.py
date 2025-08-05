@@ -15,6 +15,6 @@ class IsOwnerOrAdmin(BasePermission):
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        if request.user.role == "admin":
+        if request.user.role == "Admin":
             return True
         return obj.created_by == request.user
