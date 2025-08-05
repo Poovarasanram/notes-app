@@ -8,9 +8,10 @@ class NoteController:
         model = NoteModel()
         return model.create_note(title, content, user)
 
-    def list_notes(self, user):
+    def list_notes(self, user, page=1, page_size=8):
         model = NoteModel()
-        return model.list_notes(user)
+        return model.list_notes(user, page, page_size)
+
  
     def update_note(self, note_id, title, content, user):
         model = NoteModel()
