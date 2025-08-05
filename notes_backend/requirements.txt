@@ -1,11 +1,5 @@
 Django==5.2.4
 gunicorn
-# psycopg2-binary
-# djangorestframework
-# python-decouple
-# django-cors-headers
-
-
 djangorestframework
 djangorestframework-simplejwt
 django-cors-headers
