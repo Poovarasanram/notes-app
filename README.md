@@ -65,7 +65,7 @@ Docker Compose helps you run multiple services (Django backend, React frontend, 
 
 3. 📥 Clone the Project
 Run the following commands in your terminal:
-git clone https://github.com/your-username/notes-app-fullstack.git
+git clone https://github.com/Poovarasanram/notes-app.git
 cd notes-app-fullstack
 
 4. 🐳 Start Docker Engine
