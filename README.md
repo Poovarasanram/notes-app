@@ -46,15 +46,63 @@ notes-app-fullstack/
 
 ---
 
-## 🐳 Run with Docker
+
+
+
+## 🐳 Run with Docker🐳 Docker Compose Usage Guide - Notes App
+This document explains how to run the full-stack Notes App using Docker Compose.
+
+
+1. 📦 What is Docker Compose?
+Docker Compose helps you run multiple services (Django backend, React frontend, PostgreSQL, Nginx) using a single file. You define the setup in docker-compose.yml and run all containers together.
+
+
+2. ⚙️ Prerequisites
+✅ Make sure you have the following installed:
+•	- Docker Desktop (or Docker Engine)
+•	- Docker Compose
+•	- Git (to clone the project)
+
+3. 📥 Clone the Project
+Run the following commands in your terminal:
+git clone https://github.com/your-username/notes-app-fullstack.git
+cd notes-app-fullstack
+
+4. 🐳 Start Docker Engine
+- On Windows/Mac: Open Docker Desktop
+- On Linux:
+sudo systemctl start docker
+
+5. 🚀 Run with Docker Compose
+From the root project folder (where docker-compose.yml is located), run:
+docker-compose up --build
+This builds and starts all services together.
+
+6. 🔍 Access the App
+After successful startup:
+•	- React Frontend: http://localhost/
+•	- Django API: http://localhost/api/
+•	- Django Admin: http://localhost/admin/
+
+
+7. ⚙️ Common Docker Compose Commands
+•	Start app: docker-compose up
+•	Start + rebuild: docker-compose up --build
+•	Stop all: docker-compose down
+•	View logs: docker-compose logs
+•	Rebuild a service: docker-compose build backend
+•	Check running containers: docker ps
+
+8. 🧯 Troubleshooting
+•	- Port already in use: Change ports in docker-compose.yml or stop the other app
+•	- Docker not running: Start Docker Desktop or run 'sudo systemctl start docker'
+•	- React not updating: Rebuild frontend with 'docker-compose up --build frontend'
+•	- Backend error: Check logs with 'docker-compose logs backend'
+
 
 From the project root:
 
 ```bash
-docker-compose up --build
-
-
-
 
 🛠️ Without Docker (Manual)
 1. Backend (Django)
