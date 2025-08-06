@@ -12,12 +12,19 @@ class NoteCRUDView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        
         controller = NoteController()
         page = int(request.query_params.get('page', 1))
         page_size = int(request.query_params.get('page_size', 10))
-        notes = controller.list_notes(request.user, page=page, page_size=page_size)
+        search = request.query_params.get('search', None)
+
+        notes = controller.list_notes(
+            user=request.user,
+            page=page,
+            page_size=page_size,
+            search=search
+        )
         return Response(notes, status=status.HTTP_200_OK)
+
 
 
     def post(self, request):

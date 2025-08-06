@@ -18,17 +18,18 @@ function Notes() {
   const [editingNote, setEditingNote] = useState(null);
   const [form] = Form.useForm();
 
-  // Pagination
+  // Pagination and search
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [pageSize, setPageSize] = useState(6);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchNotes = async (page = 1, pageSize = 6) => {
+  const fetchNotes = async (page = 1, pageSize = 6, search = "") => {
     setLoading(true);
     try {
       const accessToken = localStorage.getItem("access_token");
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/notes/?page=${page}&page_size=${pageSize}`,
+        `http://127.0.0.1:8000/api/notes/?page=${page}&page_size=${pageSize}&search=${search}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -48,8 +49,8 @@ function Notes() {
   };
 
   useEffect(() => {
-    fetchNotes(currentPage, pageSize);
-  }, []);
+    fetchNotes(currentPage, pageSize, searchTerm);
+  }, [searchTerm]);
 
   const handleDelete = async (id) => {
     try {
@@ -60,7 +61,7 @@ function Notes() {
         },
       });
       message.success("Note deleted");
-      fetchNotes(currentPage, pageSize);
+      fetchNotes(currentPage, pageSize, searchTerm);
     } catch (error) {
       console.error("Delete failed:", error);
       message.error("Failed to delete note");
@@ -105,7 +106,7 @@ function Notes() {
       }
 
       setIsModalOpen(false);
-      fetchNotes(currentPage, pageSize);
+      fetchNotes(currentPage, pageSize, searchTerm);
     } catch (error) {
       console.error("Save error:", error);
       message.error("Failed to save note");
@@ -166,12 +167,25 @@ function Notes() {
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: 20,
+          flexWrap: "wrap",
+          gap: 16,
         }}
       >
-        <h2>Notes</h2>
-        <Button type="primary" onClick={handleAdd}>
-          + Add Note
-        </Button>
+        <h2 style={{ margin: 0 }}>Notes</h2>
+        <div style={{ display: "flex", gap: 12 }}>
+          <Input.Search
+            placeholder="Search notes..."
+            allowClear
+            onSearch={(value) => {
+              setSearchTerm(value);
+              setCurrentPage(1);
+            }}
+            style={{ width: 300 }}
+          />
+          <Button type="primary" onClick={handleAdd}>
+            + Add Note
+          </Button>
+        </div>
       </div>
 
       {loading ? (
@@ -189,7 +203,7 @@ function Notes() {
             total: totalItems,
             onChange: (page, size) => {
               setCurrentPage(page);
-              fetchNotes(page, size);
+              fetchNotes(page, size, searchTerm);
             },
           }}
         />

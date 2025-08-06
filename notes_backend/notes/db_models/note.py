@@ -2,6 +2,7 @@
 
 from notes.models import Note
 from django.core.paginator import Paginator
+from django.db.models import Q
 from notes.notes_utils.model_utils import convert_model_to_dict
 
 class NoteModel:
@@ -14,13 +15,21 @@ class NoteModel:
         )
         return convert_model_to_dict(note)
     
-    
-    def list_notes(self, user, page=1, page_size=8):  # default 8 notes per page
-        if user.role == "Admin":
-            notes = Note.objects.all().order_by('-id')
-        else:
-            notes = Note.objects.filter(created_by=user).order_by('-id')
 
+    def list_notes(self, user, page=1, page_size=8, search=None):
+        if user.role == "Admin":
+            notes = Note.objects.all()
+        else:
+            notes = Note.objects.filter(created_by=user)
+
+        # 🔍 Apply search filter if present
+        if search:
+            notes = notes.filter(
+                Q(title__icontains=search) |
+                Q(content__icontains=search)
+            )
+
+        notes = notes.order_by('-id')
         paginator = Paginator(notes, page_size)
         page_obj = paginator.get_page(page)
 
